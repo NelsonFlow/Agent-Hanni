@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx'
-
+ 
 export async function readExcelFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -18,7 +18,8 @@ export async function readExcelFile(file) {
           fileName: file.name,
           fileSize: file.size,
           sheets,
-          sheetNames: workbook.SheetNames
+          sheetNames: workbook.SheetNames,
+          _rawFile: e.target.result
         })
       } catch (err) {
         reject(err)
@@ -28,12 +29,12 @@ export async function readExcelFile(file) {
     reader.readAsArrayBuffer(file)
   })
 }
-
+ 
 export function extractKeyData(parsedFile) {
   const { fileName, sheets, sheetNames } = parsedFile
   const dept = detectDepartment(fileName)
   const summary = []
-
+ 
   sheetNames.slice(0, 5).forEach(sheetName => {
     const rows = sheets[sheetName]
     if (!rows || rows.length < 2) return
@@ -47,10 +48,10 @@ export function extractKeyData(parsedFile) {
       sample: dataRows.slice(0, 15)
     })
   })
-
+ 
   return { fileName, department: dept, summary }
 }
-
+ 
 function detectDepartment(fileName) {
   const f = fileName.toLowerCase()
   if (f.includes('fabric')) return 'Fabric / QA Tissu'
