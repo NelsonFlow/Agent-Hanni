@@ -1,4 +1,4 @@
-import Badge from '../common/Badge.jsx'
+import Badge from '../common/LevelBadge.jsx'
 import LevelBadge from '../common/LevelBadge.jsx'
 
 export default function FabricTable({ alerts }) {
