@@ -1,16 +1,18 @@
 const BACKEND_URL = 'https://agent-hanni-backend-production.up.railway.app'
 
 export async function analyzeWithAI(files, apiKey) {
-  // Read each file as base64
   const filesData = await Promise.all(
     Array.from(files).map(file => new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = (e) => {
-        const base64 = btoa(
-          new Uint8Array(e.target.result)
-            .reduce((data, byte) => data + String.fromCharCode(byte), '')
-        )
-        resolve({ filename: file.name, content_b64: base64 })
+        const bytes = new Uint8Array(e.target.result)
+        let binary = ''
+        const chunkSize = 8192
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          const chunk = bytes.subarray(i, i + chunkSize)
+          binary += String.fromCharCode.apply(null, chunk)
+        }
+        resolve({ filename: file.name, content_b64: btoa(binary) })
       }
       reader.onerror = reject
       reader.readAsArrayBuffer(file)
