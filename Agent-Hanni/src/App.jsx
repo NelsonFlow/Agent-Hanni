@@ -3,14 +3,13 @@ import Login from './components/Login.jsx'
 import Upload from './components/Upload.jsx'
 import Report from './components/Report.jsx'
 import History from './components/History.jsx'
-import { readExcelFile, extractKeyData } from './utils/excelReader.js'
 import { analyzeWithAI } from './utils/openaiAgent.js'
 
 const STORAGE_KEY = 'hanni_history'
 const API_KEY = import.meta.env.VITE_OPENAI_KEY
 
 export default function App() {
-  const [screen, setScreen] = useState('login') // login | home | report
+  const [screen, setScreen] = useState('login')
   const [isLoading, setIsLoading] = useState(false)
   const [report, setReport] = useState(null)
   const [reportDate, setReportDate] = useState('')
@@ -26,7 +25,7 @@ export default function App() {
 
   const saveToHistory = (date, fileCount, data) => {
     const entry = { date, fileCount, data, id: Date.now() }
-    const updated = [entry, ...history].slice(0, 10) // keep last 10
+    const updated = [entry, ...history].slice(0, 10)
     setHistory(updated)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
   }
@@ -35,17 +34,10 @@ export default function App() {
     setIsLoading(true)
     setError(null)
     try {
-      // Read all Excel files
-      const parsed = await Promise.all(files.map(readExcelFile))
-      const extracted = parsed.map(extractKeyData)
-
-      // Analyze with OpenAI
-      const result = await analyzeWithAI(extracted, API_KEY)
-
+      const result = await analyzeWithAI(files, API_KEY)
       const date = new Date().toLocaleDateString('vi-VN', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
       })
-
       saveToHistory(date, files.length, result)
       setReport(result)
       setReportDate(date)
@@ -81,11 +73,7 @@ export default function App() {
     <div style={styles.app}>
       <TopBar onHome={() => setScreen('home')} />
       <Upload onAnalyze={handleAnalyze} isLoading={isLoading} />
-      {error && (
-        <div style={styles.error}>
-          ❌ {error}
-        </div>
-      )}
+      {error && <div style={styles.error}>❌ {error}</div>}
       <History history={history} onLoad={handleLoadHistory} />
     </div>
   )

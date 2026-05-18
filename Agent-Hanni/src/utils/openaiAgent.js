@@ -1,10 +1,9 @@
 const BACKEND_URL = 'https://agent-hanni-backend-production.up.railway.app'
  
-export async function analyzeWithAI(filesData, apiKey) {
+export async function analyzeWithAI(files, apiKey) {
   const formData = new FormData()
-  for (const file of filesData) {
-    const blob = new Blob([file._rawFile], { type: 'application/octet-stream' })
-    formData.append('files', blob, file.fileName)
+  for (const file of files) {
+    formData.append('files', file, file.name)
   }
   const response = await fetch(`${BACKEND_URL}/analyze`, {
     method: 'POST',
@@ -16,8 +15,6 @@ export async function analyzeWithAI(filesData, apiKey) {
   }
   return await response.json()
 }
- 
-export async function analyzeWithAI_OLD(filesData, apiKey) {
   const today = new Date().toLocaleDateString('vi-VN', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   })
@@ -108,3 +105,4 @@ Hãy phân tích và trả lời theo đúng định dạng JSON sau (KHÔNG có
   const clean = content.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim()
   return JSON.parse(clean)
 }
+ 
