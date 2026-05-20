@@ -13,25 +13,85 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
 
   const downloadExcel = () => {
     const wb = XLSX.utils.book_new()
+
+    // Sheet 1 — Tổng quan
     const ws1 = XLSX.utils.aoa_to_sheet([
       ['TRUNG TÂM KIỂM SOÁT CHUỖI CUNG ỨNG THỜI TRANG'],
+      ['Ngày:', date],
+      [''],
       ['🔴 Khẩn cấp:', summary.critical || 0],
       ['🟠 Rủi ro:', summary.risk || 0],
       ['🟡 Cảnh báo:', summary.watch || 0],
       ['🟢 Ổn định:', summary.onTrack || 0],
+      [''],
       ['Tóm tắt:', globalSummary],
     ])
     XLSX.utils.book_append_sheet(wb, ws1, 'Tổng quan')
-    const alertRows = [['Mức độ', 'Bộ phận', 'Khách hàng', 'Style', 'Màu', 'Ngày xuất', 'Còn (ngày)', 'Vấn đề', 'Hành động']]
-    alerts.forEach(a => alertRows.push([
-      LEVEL_CONFIG[a.level]?.label || a.level,
-      a.department, a.customer, a.style, a.color,
-      a.shipDate, a.daysToShip, a.issue, a.action
-    ]))
-    const ws2 = XLSX.utils.aoa_to_sheet(alertRows)
-    ws2['!cols'] = [12, 16, 14, 18, 14, 12, 12, 45, 35].map(w => ({ wch: w }))
-    XLSX.utils.book_append_sheet(wb, ws2, 'Chi tiết cảnh báo')
-    XLSX.writeFile(wb, `BaoCao_ChuoiCungUng.xlsx`)
+
+    // Sheet 2 — Report format Hanni wants
+    const headers = [
+      'LEVEL', 'DEPT', 'Shipment Date', 'Customer', 'Season', 'Drop', 'Style', 'Color',
+      'Còn (Ngày)', 'QTY Master (pcs)',
+      // ERP
+      'ERP: Actual Qty', 'ERP: Confirm Date', 'ERP: Revised Date', 'ERP: % Arrived', 'ERP Status',
+      // Delivery
+      'Delivery: Ready Date', 'Delivery: QTY', 'Delivery: %',
+      // QA
+      'QA: Date', 'QA: QTY (mét)', 'QA: %',
+      // WH
+      'WH: Date', 'WH: QTY', 'WH: %',
+      // Merch
+      'Merch: Release Date', 'Merch: QTY', 'Merch Status',
+      // Result
+      'Status', 'Action'
+    ]
+
+    const rows = [headers]
+    alerts.forEach(a => {
+      rows.push([
+        LEVEL_CONFIG[a.level]?.label || a.level,
+        a.department,
+        a.shipDate,
+        a.customer,
+        a.season || '',
+        a.drop || '',
+        a.style,
+        a.color,
+        a.daysToShip,
+        a.qtyPcs || '',
+        // ERP
+        a.erp_actual_qty || '',
+        a.erp_confirm_date || '',
+        a.erp_revised_date || '',
+        a.erp_pct_arrived ? `${a.erp_pct_arrived}%` : '',
+        a.erp_status || '',
+        // Delivery
+        a.delivery_ready_date || '',
+        a.delivery_qty || '',
+        a.delivery_pct ? `${a.delivery_pct}%` : '',
+        // QA
+        a.qa_date || '',
+        a.qa_qty || '',
+        a.qa_pct ? `${a.qa_pct}%` : '',
+        // WH
+        a.wh_date || '',
+        a.wh_qty || '',
+        a.wh_pct ? `${a.wh_pct}%` : '',
+        // Merch
+        a.merch_release_date || '',
+        a.merch_qty || '',
+        a.merch_status || '',
+        // Result
+        a.issue,
+        a.action
+      ])
+    })
+
+    const ws2 = XLSX.utils.aoa_to_sheet(rows)
+    ws2['!cols'] = [10, 14, 13, 12, 8, 14, 16, 20, 8, 12, 10, 13, 13, 10, 14, 13, 10, 8, 12, 10, 8, 12, 10, 8, 13, 10, 10, 40, 35].map(w => ({ wch: w }))
+    XLSX.utils.book_append_sheet(wb, ws2, 'REPORT HANNI WANT')
+
+    XLSX.writeFile(wb, `BaoCao_ChuoiCungUng_${date.replace(/\//g, '-')}.xlsx`)
   }
 
   return (
