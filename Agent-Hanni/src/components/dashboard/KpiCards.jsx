@@ -14,7 +14,7 @@ export default function KpiCards({ summary, setActiveTab, levelFilter, setLevelF
         <div
           key={k.key}
           style={{ ...S.card, background: k.bg, outline: levelFilter === k.key ? `2px solid ${k.color}` : 'none' }}
-          onClick={() => { setLevelFilter(levelFilter === k.key ? 'ALL' : k.key); setActiveTab('alerts') }}
+          onClick={() => setLevelFilter(levelFilter === k.key ? 'ALL' : k.key)}
         >
           <div style={{ ...S.num, color: k.color }}>{k.val}</div>
           <div style={S.label}>{k.label}</div>
