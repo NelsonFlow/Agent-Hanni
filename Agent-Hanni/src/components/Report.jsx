@@ -12,9 +12,11 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
   const { summary = {}, alerts = [], departmentStatus = [], recommendations = [], globalSummary = '' } = data
 
   const downloadExcel = () => {
+    const now = new Date()
+    const date = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`
+
     const wb = XLSX.utils.book_new()
 
-    // Sheet 1 — Tổng quan
     const ws1 = XLSX.utils.aoa_to_sheet([
       ['TRUNG TÂM KIỂM SOÁT CHUỖI CUNG ỨNG THỜI TRANG'],
       ['Ngày:', date],
@@ -28,21 +30,14 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
     ])
     XLSX.utils.book_append_sheet(wb, ws1, 'Tổng quan')
 
-    // Sheet 2 — Report format Hanni wants
     const headers = [
       'LEVEL', 'DEPT', 'Shipment Date', 'Customer', 'Season', 'Drop', 'Style', 'Color',
       'Còn (Ngày)', 'QTY Master (pcs)',
-      // ERP
       'ERP: Actual Qty', 'ERP: Confirm Date', 'ERP: Revised Date', 'ERP: % Arrived', 'ERP Status',
-      // Delivery
       'Delivery: Ready Date', 'Delivery: QTY', 'Delivery: %',
-      // QA
       'QA: Date', 'QA: QTY (mét)', 'QA: %',
-      // WH
       'WH: Date', 'WH: QTY', 'WH: %',
-      // Merch
       'Merch: Release Date', 'Merch: QTY', 'Merch Status',
-      // Result
       'Status', 'Action'
     ]
 
@@ -59,29 +54,23 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
         a.color,
         a.daysToShip,
         a.qtyPcs || '',
-        // ERP
         a.erp_actual_qty || '',
         a.erp_confirm_date || '',
         a.erp_revised_date || '',
         a.erp_pct_arrived ? `${a.erp_pct_arrived}%` : '',
         a.erp_status || '',
-        // Delivery
         a.delivery_ready_date || '',
         a.delivery_qty || '',
         a.delivery_pct ? `${a.delivery_pct}%` : '',
-        // QA
         a.qa_date || '',
         a.qa_qty || '',
         a.qa_pct ? `${a.qa_pct}%` : '',
-        // WH
         a.wh_date || '',
         a.wh_qty || '',
         a.wh_pct ? `${a.wh_pct}%` : '',
-        // Merch
         a.merch_release_date || '',
         a.merch_qty || '',
         a.merch_status || '',
-        // Result
         a.issue,
         a.action
       ])
@@ -96,8 +85,6 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
 
   return (
     <div style={S.wrap}>
-
-      {/* Header */}
       <div style={S.header}>
         <div>
           <div style={S.title}>🏭 Trung tâm kiểm soát chuỗi cung ứng thời trang</div>
@@ -106,19 +93,16 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
         <button style={S.dlBtn} onClick={downloadExcel}>⬇ Tải xuống Excel</button>
       </div>
 
-      {/* Résumé IA */}
       {globalSummary && (
         <div style={S.summaryBox}>📋 {globalSummary}</div>
       )}
 
-      {/* Message vide */}
       {isEmpty && (
         <div style={S.emptyBox}>
           📂 Tải lên các báo cáo Excel từ thanh bên trái để bắt đầu phân tích
         </div>
       )}
 
-      {/* KPIs */}
       <KpiCards
         summary={summary}
         setActiveTab={setActiveTab}
@@ -126,7 +110,6 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
         setLevelFilter={setLevelFilter}
       />
 
-      {/* Dashboard */}
       {activeTab === 'dashboard' && (
         <div style={S.twoCol}>
           <UpcomingShipments alerts={alerts} />
@@ -134,17 +117,14 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
         </div>
       )}
 
-      {/* Fabric */}
       {activeTab === 'fabric' && (
         <FabricTable alerts={alerts} />
       )}
 
-      {/* Alertes */}
       {activeTab === 'alerts' && (
         <AlertsTable alerts={alerts} />
       )}
 
-      {/* Départements */}
       {activeTab === 'depts' && (
         <div style={S.deptGrid}>
           {departmentStatus.length === 0
@@ -165,7 +145,6 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
           }
         </div>
       )}
-
     </div>
   )
 }
