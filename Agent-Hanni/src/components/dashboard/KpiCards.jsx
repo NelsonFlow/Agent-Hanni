@@ -9,7 +9,7 @@ export default function KpiCards({ summary, setActiveTab, levelFilter, setLevelF
   ]
 
   return (
-    <div style={S.row}>
+    <div className="kpi-grid" style={S.row}>
       {cards.map(k => (
         <div
           key={k.key}

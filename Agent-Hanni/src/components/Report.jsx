@@ -14,9 +14,7 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
   const downloadExcel = () => {
     const now = new Date()
     const date = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`
-
     const wb = XLSX.utils.book_new()
-
     const ws1 = XLSX.utils.aoa_to_sheet([
       ['TRUNG TÂM KIỂM SOÁT CHUỖI CUNG ỨNG THỜI TRANG'],
       ['Ngày:', date],
@@ -29,7 +27,6 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
       ['Tóm tắt:', globalSummary],
     ])
     XLSX.utils.book_append_sheet(wb, ws1, 'Tổng quan')
-
     const headers = [
       'LEVEL', 'DEPT', 'Shipment Date', 'Customer', 'Season', 'Drop', 'Style', 'Color',
       'Còn (Ngày)', 'QTY Master (pcs)',
@@ -40,54 +37,34 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
       'Merch: Release Date', 'Merch: QTY', 'Merch Status',
       'Status', 'Action'
     ]
-
     const rows = [headers]
     alerts.forEach(a => {
       rows.push([
         LEVEL_CONFIG[a.level]?.label || a.level,
-        a.department,
-        a.shipDate,
-        a.customer,
-        a.season || '',
-        a.drop || '',
-        a.style,
-        a.color,
-        a.daysToShip,
-        a.qtyPcs || '',
-        a.erp_actual_qty || '',
-        a.erp_confirm_date || '',
-        a.erp_revised_date || '',
-        a.erp_pct_arrived ? `${a.erp_pct_arrived}%` : '',
-        a.erp_status || '',
-        a.delivery_ready_date || '',
-        a.delivery_qty || '',
+        a.department, a.shipDate, a.customer,
+        a.season || '', a.drop || '', a.style, a.color,
+        a.daysToShip, a.qtyPcs || '',
+        a.erp_actual_qty || '', a.erp_confirm_date || '', a.erp_revised_date || '',
+        a.erp_pct_arrived ? `${a.erp_pct_arrived}%` : '', a.erp_status || '',
+        a.delivery_ready_date || '', a.delivery_qty || '',
         a.delivery_pct ? `${a.delivery_pct}%` : '',
-        a.qa_date || '',
-        a.qa_qty || '',
-        a.qa_pct ? `${a.qa_pct}%` : '',
-        a.wh_date || '',
-        a.wh_qty || '',
-        a.wh_pct ? `${a.wh_pct}%` : '',
-        a.merch_release_date || '',
-        a.merch_qty || '',
-        a.merch_status || '',
-        a.issue,
-        a.action
+        a.qa_date || '', a.qa_qty || '', a.qa_pct ? `${a.qa_pct}%` : '',
+        a.wh_date || '', a.wh_qty || '', a.wh_pct ? `${a.wh_pct}%` : '',
+        a.merch_release_date || '', a.merch_qty || '', a.merch_status || '',
+        a.issue, a.action
       ])
     })
-
     const ws2 = XLSX.utils.aoa_to_sheet(rows)
-    ws2['!cols'] = [10, 14, 13, 12, 8, 14, 16, 20, 8, 12, 10, 13, 13, 10, 14, 13, 10, 8, 12, 10, 8, 12, 10, 8, 13, 10, 10, 40, 35].map(w => ({ wch: w }))
+    ws2['!cols'] = [10,14,13,12,8,14,16,20,8,12,10,13,13,10,14,13,10,8,12,10,8,12,10,8,13,10,10,40,35].map(w=>({wch:w}))
     XLSX.utils.book_append_sheet(wb, ws2, 'REPORT HANNI WANT')
-
-    XLSX.writeFile(wb, `BaoCao_ChuoiCungUng_${date.replace(/\//g, '-')}.xlsx`)
+    XLSX.writeFile(wb, `BaoCao_ChuoiCungUng_${date.replace(/\//g,'-')}.xlsx`)
   }
 
   return (
     <div style={S.wrap}>
       <div style={S.header}>
         <div>
-          <div style={S.title}>🏭 Trung tâm kiểm soát chuỗi cung ứng thời trang</div>
+          <div className="dashboard-title" style={S.title}>🏭 Trung tâm kiểm soát chuỗi cung ứng thời trang</div>
           <div style={S.subtitle}>Cảnh báo sớm · Hiển thị · Đồng bộ · Giao hàng đúng hạn</div>
         </div>
         <button style={S.dlBtn} onClick={downloadExcel}>⬇ Tải xuống Excel</button>
@@ -111,7 +88,7 @@ export default function Report({ data, activeTab, setActiveTab, isEmpty }) {
       />
 
       {activeTab === 'dashboard' && (
-        <div style={S.twoCol}>
+        <div className="two-col" style={S.twoCol}>
           <UpcomingShipments alerts={alerts} />
           <EarlyWarnings alerts={alerts} recommendations={recommendations} />
         </div>

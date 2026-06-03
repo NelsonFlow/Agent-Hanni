@@ -38,13 +38,12 @@ body {
 button { cursor: pointer; font-family: var(--font); }
 input { font-family: var(--font); }
 
-/* ===== MOBILE ===== */
+/* ===== HAMBURGER ===== */
 .hamburger-btn {
   display: none;
   position: fixed;
   top: 10px;
   left: 12px;
-  zIndex: 200;
   background: var(--bg3);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -58,7 +57,9 @@ input { font-family: var(--font); }
   z-index: 200;
 }
 
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
+
   .hamburger-btn {
     display: flex !important;
   }
@@ -83,5 +84,26 @@ input { font-family: var(--font); }
 
   .main-content {
     padding: 12px !important;
+  }
+
+  /* KPIs 2x2 */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Tableaux scroll horizontal */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Header titre plus petit */
+  .dashboard-title {
+    font-size: 14px !important;
+  }
+
+  /* Two col → single col */
+  .two-col {
+    grid-template-columns: 1fr !important;
   }
 }
