@@ -21,6 +21,7 @@ export default function App() {
   const [error, setError] = useState(null)
   const [history, setHistory] = useState([])
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
@@ -83,19 +84,38 @@ export default function App() {
   return (
     <div style={S.app}>
       <TopBar />
-      <div style={S.layout}>
-        <Sidebar
-          onAnalyze={handleAnalyze}
-          isLoading={isLoading}
-          error={error}
-          history={history}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          report={report}
-          reportDate={reportDate}
-          onLoadHistory={handleLoadHistory}
+
+      {/* Bouton hamburger mobile */}
+      <button
+        className="hamburger-btn"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        {sidebarOpen ? '✕' : '☰'}
+      </button>
+
+      {/* Overlay mobile */}
+      {sidebarOpen && (
+        <div
+          style={S.overlay}
+          onClick={() => setSidebarOpen(false)}
         />
-        <div style={S.main}>
+      )}
+
+      <div className="main-layout" style={S.layout}>
+        <div className={`sidebar-wrap${sidebarOpen ? ' open' : ''}`}>
+          <Sidebar
+            onAnalyze={handleAnalyze}
+            isLoading={isLoading}
+            error={error}
+            history={history}
+            activeTab={activeTab}
+            setActiveTab={(tab) => { setActiveTab(tab); setSidebarOpen(false) }}
+            report={report}
+            reportDate={reportDate}
+            onLoadHistory={(item) => { handleLoadHistory(item); setSidebarOpen(false) }}
+          />
+        </div>
+        <div className="main-content" style={S.main}>
           <Report
             data={report || EMPTY_REPORT}
             date={reportDate || today}
@@ -113,4 +133,9 @@ const S = {
   app: { minHeight: '100vh', display: 'flex', flexDirection: 'column' },
   layout: { display: 'flex', flex: 1, minHeight: 'calc(100vh - 45px)' },
   main: { flex: 1, padding: '24px', overflowY: 'auto' },
+  overlay: {
+    position: 'fixed', inset: 0,
+    background: 'rgba(0,0,0,0.5)',
+    zIndex: 150
+  }
 }

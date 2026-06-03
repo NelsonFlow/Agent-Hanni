@@ -37,3 +37,51 @@ body {
 
 button { cursor: pointer; font-family: var(--font); }
 input { font-family: var(--font); }
+
+/* ===== MOBILE ===== */
+.hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 12px;
+  zIndex: 200;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+@media (max-width: 768px) {
+  .hamburger-btn {
+    display: flex !important;
+  }
+
+  .sidebar-wrap {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    z-index: 160 !important;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+
+  .sidebar-wrap.open {
+    transform: translateX(0) !important;
+  }
+
+  .main-layout {
+    flex-direction: column;
+  }
+
+  .main-content {
+    padding: 12px !important;
+  }
+}
